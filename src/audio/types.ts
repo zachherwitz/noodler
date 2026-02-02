@@ -134,3 +134,31 @@ export interface EffectsState {
   filter: boolean;
   reverb: boolean;
 }
+
+/**
+ * Rhythm pattern styles for backing tracks.
+ */
+export type BackingStyle = 'drone' | 'quarter' | 'eighth' | 'blues' | 'arpeggio';
+
+/**
+ * Instrument sounds for backing tracks.
+ */
+export type BackingInstrument = 'bass' | 'pad' | 'pluck' | 'keys';
+
+/**
+ * Configuration for BackingTrack.
+ */
+export interface BackingConfig {
+  /** Tempo in BPM (default: 120) */
+  tempo?: number;
+  /** Rhythm style (default: 'quarter') */
+  style?: BackingStyle;
+  /** Instrument sound (default: 'bass') */
+  instrument?: BackingInstrument;
+  /** Chord progression as roman numerals or note names */
+  chords?: string[];
+  /** Number of bars per chord (default: 1) */
+  bars?: number;
+  /** Swing percentage 0-100 (default: 0) */
+  swing?: number;
+}
