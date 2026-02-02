@@ -179,6 +179,33 @@ noodler-board {
   overflow: hidden;
 }
 
+.bend-debug {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.bend-debug .label {
+  color: var(--color-text-muted);
+}
+
+.bend-debug #bend-value {
+  font-weight: 600;
+  color: var(--color-accent);
+  min-width: 50px;
+  text-align: right;
+}
+
+.bend-debug .unit {
+  color: var(--color-text-muted);
+}
+
 .output-panel {
   background: var(--color-surface-alt);
   border-radius: var(--radius-md);

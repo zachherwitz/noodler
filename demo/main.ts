@@ -16,6 +16,8 @@ function initBoardDemo(): void {
   const scaleSelect = $('scale-select') as HTMLSelectElement | null;
   const waveformSelect = $('waveform-select') as HTMLSelectElement | null;
   const themeSelect = $('theme-select') as HTMLSelectElement | null;
+  const bendModeSelect = $('bend-mode-select') as HTMLSelectElement | null;
+  const bendValue = $('bend-value');
 
   scaleSelect?.addEventListener('change', () => {
     board.setAttribute('scale', scaleSelect.value);
@@ -27,6 +29,22 @@ function initBoardDemo(): void {
 
   themeSelect?.addEventListener('change', () => {
     board.setAttribute('theme', themeSelect.value);
+  });
+
+  bendModeSelect?.addEventListener('change', () => {
+    board.setAttribute('bend-mode', bendModeSelect.value);
+  });
+
+  board.addEventListener('bend', ((event: CustomEvent) => {
+    if (bendValue) {
+      bendValue.textContent = String(event.detail.cents);
+    }
+  }) as EventListener);
+
+  board.addEventListener('noteoff', () => {
+    if (bendValue) {
+      bendValue.textContent = '0';
+    }
   });
 
   const effectIds = ['delay', 'vibrato', 'distortion', 'reverb', 'filter'];

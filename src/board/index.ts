@@ -1,6 +1,8 @@
 export { NoodlerBoard, registerNoodlerBoard } from './noodler-board.js';
 export { NoodlerKey, registerNoodlerKey } from './noodler-key.js';
 export type {
+  BendMode,
+  BendModeChangeEventDetail,
   BoardConfig,
   BoardTheme,
   BendEventDetail,
@@ -20,6 +22,14 @@ export {
   getBendFromX,
   triggerHaptic,
 } from './utils.js';
+export {
+  xOffsetToCents,
+  PIXELS_PER_OCTAVE,
+  CENTS_PER_OCTAVE,
+  MAX_OCTAVE_OFFSET,
+  DIRECT_THRESHOLD_PX,
+  STEPPED_INTERVALS,
+} from './bend.js';
 
 import { registerNoodlerBoard } from './noodler-board.js';
 import { registerNoodlerKey } from './noodler-key.js';
