@@ -1,4 +1,5 @@
 export { Synth } from './synth';
+export { BackingTrack } from './backing';
 export {
   createDelay,
   createDistortion,
@@ -20,4 +21,7 @@ export type {
   FilterConfig,
   ReverbConfig,
   EffectConfig,
+  BackingStyle,
+  BackingInstrument,
+  BackingConfig,
 } from './types';
