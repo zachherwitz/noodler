@@ -61,3 +61,19 @@ export interface PointerState {
  * Valid effect names that can be toggled.
  */
 export type EffectName = 'delay' | 'distortion' | 'vibrato' | 'filter' | 'reverb';
+
+/**
+ * Bend mode for horizontal pitch bending behavior.
+ *
+ * - 'dynamic': Smooth continuous bend (default, ±1 octave max)
+ * - 'stepped': Snaps to pentatonic scale intervals
+ * - 'direct': 3-state toggle (octave down / original / octave up)
+ */
+export type BendMode = 'dynamic' | 'stepped' | 'direct';
+
+/**
+ * Detail payload for the bendmodechange event.
+ */
+export interface BendModeChangeEventDetail {
+  mode: BendMode;
+}

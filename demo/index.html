@@ -50,6 +50,15 @@
             <option value="colorful">Colorful</option>
           </select>
         </div>
+
+        <div class="control-group">
+          <label for="bend-mode-select">Bend Mode</label>
+          <select id="bend-mode-select">
+            <option value="dynamic">Dynamic (smooth)</option>
+            <option value="stepped">Stepped (scale intervals)</option>
+            <option value="direct">Direct (octave toggle)</option>
+          </select>
+        </div>
       </div>
 
       <div class="effects-controls">
@@ -81,7 +90,14 @@
           scale="A pentatonic-minor"
           waveform="sine"
           theme="dark"
+          bend-mode="dynamic"
         ></noodler-board>
+      </div>
+
+      <div class="bend-debug" id="bend-debug">
+        <span class="label">Bend:</span>
+        <span id="bend-value">0</span>
+        <span class="unit">cents</span>
       </div>
 
       <details class="code-example">
@@ -91,6 +107,7 @@
   waveform="sine"
   effects="delay,vibrato"
   theme="dark"
+  bend-mode="dynamic"
 &gt;&lt;/noodler-board&gt;</code></pre>
       </details>
     </section>

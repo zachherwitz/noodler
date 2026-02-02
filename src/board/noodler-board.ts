@@ -4,12 +4,13 @@ import { Synth } from '../audio/synth.js';
 import { createBoardStyles, getNoteColor } from './styles.js';
 import type {
   BendEventDetail,
+  BendMode,
+  BendModeChangeEventDetail,
   NoteOffEventDetail,
   NoteOnEventDetail,
   PointerState,
 } from './types.js';
 import {
-  getBendFromX,
   getNoteIndexFromY,
   parseEffectsAttribute,
   parseScaleAttribute,
@@ -18,6 +19,7 @@ import {
   validateTheme,
   validateWaveform,
 } from './utils.js';
+import { xOffsetToCents } from './bend.js';
 import { NoodlerKey, registerNoodlerKey } from './noodler-key.js';
 
 const boardStyles = createBoardStyles();
@@ -32,10 +34,12 @@ const boardStyles = createBoardStyles();
  * @attr {string} waveform - Oscillator type: 'sine' | 'square' | 'sawtooth' | 'triangle'
  * @attr {string} effects - Comma-separated effects: 'delay,vibrato,distortion,filter,reverb'
  * @attr {string} theme - Visual theme: 'dark' | 'light' | 'colorful'
+ * @attr {string} bend-mode - Pitch bend behavior: 'dynamic' | 'stepped' | 'direct'
  *
  * @fires noteon - Fired when a note starts playing
  * @fires noteoff - Fired when a note stops playing
  * @fires bend - Fired when pitch bend changes
+ * @fires bendmodechange - Fired when bend mode changes
  *
  * @example
  * ```html
@@ -44,6 +48,7 @@ const boardStyles = createBoardStyles();
  *   waveform="sawtooth"
  *   effects="delay,vibrato"
  *   theme="dark"
+ *   bend-mode="dynamic"
  * ></noodler-board>
  * ```
  */
@@ -55,9 +60,10 @@ export class NoodlerBoard extends HTMLElement {
   private synth: Synth | null = null;
   private notes: Note[] = [];
   private activePointers: Map<number, PointerState> = new Map();
+  private bendMode: BendMode = 'dynamic';
 
   static get observedAttributes(): string[] {
-    return ['scale', 'notes', 'waveform', 'effects', 'theme'];
+    return ['scale', 'notes', 'waveform', 'effects', 'theme', 'bend-mode'];
   }
 
   constructor() {
@@ -113,6 +119,9 @@ export class NoodlerBoard extends HTMLElement {
         break;
       case 'theme':
         this.updateTheme();
+        break;
+      case 'bend-mode':
+        this.updateBendMode();
         break;
     }
   }
@@ -199,6 +208,25 @@ export class NoodlerBoard extends HTMLElement {
         key.removeAttribute('color');
       }
     }
+  }
+
+  private updateBendMode(): void {
+    const modeAttr = this.getAttribute('bend-mode');
+    const validModes = new Set(['dynamic', 'stepped', 'direct']);
+
+    if (modeAttr && validModes.has(modeAttr)) {
+      this.bendMode = modeAttr as BendMode;
+    } else {
+      this.bendMode = 'dynamic';
+    }
+
+    this.dispatchEvent(
+      new CustomEvent<BendModeChangeEventDetail>('bendmodechange', {
+        detail: { mode: this.bendMode },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   private attachPointerListeners(): void {
@@ -291,11 +319,12 @@ export class NoodlerBoard extends HTMLElement {
         );
       }
     } else {
-      const cents = getBendFromX(x, rect.width);
+      const xOffset = x - state.startX;
+      const cents = xOffsetToCents(xOffset, this.bendMode);
       this.synth.bend(event.pointerId, cents);
 
       const note = this.notes[state.noteIndex];
-      if (note && cents !== 0) {
+      if (note) {
         this.dispatchEvent(
           new CustomEvent<BendEventDetail>('bend', {
             detail: { note, cents },
@@ -368,6 +397,13 @@ export class NoodlerBoard extends HTMLElement {
     for (const [pointerId] of this.activePointers) {
       this.endNote(pointerId);
     }
+  }
+
+  /**
+   * Gets the current bend mode.
+   */
+  getBendMode(): BendMode {
+    return this.bendMode;
   }
 }
 
