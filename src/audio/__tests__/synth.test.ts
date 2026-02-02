@@ -12,6 +12,7 @@ const mockOscillator = {
     setValueAtTime: vi.fn(),
   },
   connect: vi.fn(),
+  disconnect: vi.fn(),
   start: vi.fn(),
   stop: vi.fn(),
 };
@@ -23,6 +24,7 @@ const mockCompressor = {
   attack: { setValueAtTime: vi.fn() },
   release: { setValueAtTime: vi.fn() },
   connect: vi.fn(),
+  disconnect: vi.fn(),
 };
 
 const mockDestination = {};
@@ -30,6 +32,7 @@ const mockDestination = {};
 const createMockAudioContext = () => ({
   currentTime: 0,
   destination: mockDestination,
+  sampleRate: 44100,
   createOscillator: vi.fn(() => ({ ...mockOscillator })),
   createGain: vi.fn(() => ({
     gain: {
@@ -39,8 +42,35 @@ const createMockAudioContext = () => ({
       cancelScheduledValues: vi.fn(),
     },
     connect: vi.fn(),
+    disconnect: vi.fn(),
   })),
   createDynamicsCompressor: vi.fn(() => ({ ...mockCompressor })),
+  createDelay: vi.fn(() => ({
+    delayTime: { setValueAtTime: vi.fn() },
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  })),
+  createWaveShaper: vi.fn(() => ({
+    curve: null,
+    oversample: '4x',
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  })),
+  createBiquadFilter: vi.fn(() => ({
+    type: 'lowpass',
+    frequency: { setValueAtTime: vi.fn(), connect: vi.fn() },
+    Q: { setValueAtTime: vi.fn() },
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  })),
+  createConvolver: vi.fn(() => ({
+    buffer: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  })),
+  createBuffer: vi.fn(() => ({
+    getChannelData: vi.fn(() => new Float32Array(44100)),
+  })),
   close: vi.fn(),
 });
 
@@ -342,6 +372,153 @@ describe('Synth', () => {
       ];
       notes.forEach((note) => synth.noteOn(note.index, note.frequency));
       expect(synth.getActiveNoteCount()).toBe(3);
+    });
+  });
+
+  describe('effects', () => {
+    describe('getActiveEffects', () => {
+      it('returns default effects state (all disabled)', () => {
+        const synth = new Synth();
+        const effects = synth.getActiveEffects();
+        expect(effects).toEqual({
+          delay: false,
+          distortion: false,
+          vibrato: false,
+          filter: false,
+          reverb: false,
+        });
+      });
+    });
+
+    describe('toggleDelay', () => {
+      it('enables delay effect', () => {
+        const synth = new Synth();
+        synth.toggleDelay(true);
+        expect(synth.getActiveEffects().delay).toBe(true);
+      });
+
+      it('disables delay effect', () => {
+        const synth = new Synth();
+        synth.toggleDelay(true);
+        synth.toggleDelay(false);
+        expect(synth.getActiveEffects().delay).toBe(false);
+      });
+
+      it('does not rebuild chain if state unchanged', () => {
+        const synth = new Synth();
+        synth.toggleDelay(false);
+        expect(synth.getActiveEffects().delay).toBe(false);
+      });
+    });
+
+    describe('toggleDistortion', () => {
+      it('enables distortion effect', () => {
+        const synth = new Synth();
+        synth.toggleDistortion(true);
+        expect(synth.getActiveEffects().distortion).toBe(true);
+      });
+
+      it('disables distortion effect', () => {
+        const synth = new Synth();
+        synth.toggleDistortion(true);
+        synth.toggleDistortion(false);
+        expect(synth.getActiveEffects().distortion).toBe(false);
+      });
+    });
+
+    describe('toggleVibrato', () => {
+      it('enables vibrato effect', () => {
+        const synth = new Synth();
+        synth.toggleVibrato(true);
+        expect(synth.getActiveEffects().vibrato).toBe(true);
+      });
+
+      it('disables vibrato effect', () => {
+        const synth = new Synth();
+        synth.toggleVibrato(true);
+        synth.toggleVibrato(false);
+        expect(synth.getActiveEffects().vibrato).toBe(false);
+      });
+    });
+
+    describe('toggleFilter', () => {
+      it('enables filter effect', () => {
+        const synth = new Synth();
+        synth.toggleFilter(true);
+        expect(synth.getActiveEffects().filter).toBe(true);
+      });
+
+      it('disables filter effect', () => {
+        const synth = new Synth();
+        synth.toggleFilter(true);
+        synth.toggleFilter(false);
+        expect(synth.getActiveEffects().filter).toBe(false);
+      });
+    });
+
+    describe('toggleReverb', () => {
+      it('enables reverb effect', () => {
+        const synth = new Synth();
+        synth.toggleReverb(true);
+        expect(synth.getActiveEffects().reverb).toBe(true);
+      });
+
+      it('disables reverb effect', () => {
+        const synth = new Synth();
+        synth.toggleReverb(true);
+        synth.toggleReverb(false);
+        expect(synth.getActiveEffects().reverb).toBe(false);
+      });
+    });
+
+    describe('effect chain with AudioContext', () => {
+      it('creates effect nodes when AudioContext is active', () => {
+        const synth = new Synth();
+        synth.noteOn(0, 440);
+        synth.toggleDelay(true);
+        expect(mockAudioContext.createDelay).toHaveBeenCalled();
+      });
+
+      it('creates multiple effects in correct order', () => {
+        const synth = new Synth();
+        synth.noteOn(0, 440);
+        synth.toggleDistortion(true);
+        synth.toggleFilter(true);
+        synth.toggleDelay(true);
+        synth.toggleReverb(true);
+
+        expect(mockAudioContext.createWaveShaper).toHaveBeenCalled();
+        expect(mockAudioContext.createBiquadFilter).toHaveBeenCalled();
+        expect(mockAudioContext.createDelay).toHaveBeenCalled();
+        expect(mockAudioContext.createConvolver).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('octave shift', () => {
+    describe('setOctaveShift', () => {
+      it('sets octave shift within valid range', () => {
+        const synth = new Synth();
+        synth.setOctaveShift(1);
+        expect(synth.getOctaveShift()).toBe(1);
+      });
+
+      it('clamps octave shift to minimum -2', () => {
+        const synth = new Synth();
+        synth.setOctaveShift(-5);
+        expect(synth.getOctaveShift()).toBe(-2);
+      });
+
+      it('clamps octave shift to maximum 2', () => {
+        const synth = new Synth();
+        synth.setOctaveShift(5);
+        expect(synth.getOctaveShift()).toBe(2);
+      });
+
+      it('defaults to 0', () => {
+        const synth = new Synth();
+        expect(synth.getOctaveShift()).toBe(0);
+      });
     });
   });
 });
