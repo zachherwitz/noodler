@@ -1,27 +1,67 @@
 {
   "name": "noodler",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "A modular, framework-agnostic music toolkit for web applications",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./scale": {
+      "types": "./dist/scale/index.d.ts",
+      "import": "./dist/scale/index.js",
+      "require": "./dist/scale/index.cjs"
+    },
+    "./audio": {
+      "types": "./dist/audio/index.d.ts",
+      "import": "./dist/audio/index.js",
+      "require": "./dist/audio/index.cjs"
+    },
+    "./board": {
+      "types": "./dist/board/index.d.ts",
+      "import": "./dist/board/index.js",
+      "require": "./dist/board/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-  "dev": "vite demo",
-  "build": "tsup",
-  "build:demo": "vite build demo",
-  "lint": "eslint src",
-  "typecheck": "tsc --noEmit",
-  "test": "vitest",
-  "prepublishOnly": "npm run build"
-},
-  "keywords": [],
+    "dev": "vite demo",
+    "build": "tsup",
+    "build:demo": "vite build demo",
+    "lint": "eslint src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "music",
+    "audio",
+    "synth",
+    "scale",
+    "web-audio",
+    "web-components"
+  ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.2.0",
     "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "typescript-eslint": "^8.32.1",
+    "vite": "^7.3.1",
+    "vitest": "^3.1.3"
   }
 }
