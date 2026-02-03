@@ -6,8 +6,10 @@ import type {
   BackingStyle,
   BackingInstrument,
 } from '../src/audio';
-import '../src/board';
+import { registerBoardComponents } from '../src/board';
 import type { NoodlerBoard } from '../src/board';
+
+registerBoardComponents();
 
 function $(id: string): HTMLElement | null {
   return document.getElementById(id);
