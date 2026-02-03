@@ -19,3 +19,6 @@ export {
 export { noteToFrequency, generateScale } from './generator.js';
 
 export { resolveChord, resolveChordProgression } from './chords.js';
+
+export { PROGRESSIONS } from './progressions.js';
+export type { ProgressionName } from './progressions.js';
