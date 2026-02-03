@@ -37,7 +37,10 @@ describe('PROGRESSIONS', () => {
   });
 
   it('BLUES_12_BAR resolves correctly in key of A', () => {
-    const resolved = resolveChordProgression([...PROGRESSIONS.BLUES_12_BAR], 'A');
+    const resolved = resolveChordProgression(
+      [...PROGRESSIONS.BLUES_12_BAR],
+      'A'
+    );
     expect(resolved[0]!.symbol).toBe('A');
     expect(resolved[4]!.symbol).toBe('D');
     expect(resolved[8]!.symbol).toBe('E');
@@ -59,7 +62,10 @@ describe('PROGRESSIONS', () => {
   });
 
   it('MINOR_NATURAL contains all minor chords', () => {
-    const resolved = resolveChordProgression([...PROGRESSIONS.MINOR_NATURAL], 'A');
+    const resolved = resolveChordProgression(
+      [...PROGRESSIONS.MINOR_NATURAL],
+      'A'
+    );
     expect(resolved[0]!.isMajor).toBe(false);
     expect(resolved[1]!.isMajor).toBe(false);
     expect(resolved[2]!.isMajor).toBe(false);

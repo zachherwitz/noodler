@@ -531,7 +531,8 @@ describe('BackingTrack', () => {
       backing.play();
 
       expect(handler).toHaveBeenCalledTimes(1);
-      const event = handler.mock.calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
+      const event = handler.mock
+        .calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
       expect(event.detail.chordIndex).toBe(0);
       expect(event.detail.chord.symbol).toBe('C');
       expect(event.detail.beatInBar).toBe(0);
@@ -669,7 +670,8 @@ describe('BackingTrack', () => {
       backing.seekToChord(1);
 
       expect(handler).toHaveBeenCalledTimes(1);
-      const event = handler.mock.calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
+      const event = handler.mock
+        .calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
       expect(event.detail.chordIndex).toBe(1);
     });
   });
