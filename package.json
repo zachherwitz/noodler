@@ -1,6 +1,6 @@
 {
   "name": "noodler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A modular, framework-agnostic music toolkit for web applications",
   "type": "module",
   "sideEffects": false,
