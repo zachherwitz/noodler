@@ -4,6 +4,8 @@ import type {
   BackingConfig,
   OscillatorType,
   ADSREnvelope,
+  ChordChangeEventDetail,
+  ChordChangeCallback,
 } from './types';
 import type { NoteName, ResolvedChord } from '../scale/types';
 import { resolveChordProgression } from '../scale/chords';
@@ -54,6 +56,8 @@ interface ScheduledNote {
 /**
  * Manages backing track playback with chord progressions and rhythm patterns.
  *
+ * Extends EventTarget to dispatch 'chordchange' events when the current chord changes.
+ *
  * @example
  * ```ts
  * const ctx = new AudioContext();
@@ -62,12 +66,18 @@ interface ScheduledNote {
  *   style: 'quarter',
  *   chords: ['I', 'IV', 'V', 'I'],
  * });
+ *
+ * // Listen for chord changes
+ * backing.addEventListener('chordchange', (e) => {
+ *   console.log(e.detail.chord.symbol);
+ * });
+ *
  * backing.play();
  * backing.stop();
  * backing.destroy();
  * ```
  */
-export class BackingTrack {
+export class BackingTrack extends EventTarget {
   private audioContext: AudioContext;
   private masterGain: GainNode;
   private compressor: DynamicsCompressorNode;
@@ -88,6 +98,8 @@ export class BackingTrack {
   private currentChordIndex = 0;
   private beatsPerChord = 0;
   private activeOscillators = new Set<OscillatorNode>();
+  private totalBeat = 0;
+  private onChordChangeCallback?: ChordChangeCallback;
 
   /**
    * Creates a new BackingTrack instance.
@@ -96,6 +108,7 @@ export class BackingTrack {
    * @param config - Configuration options
    */
   constructor(audioContext: AudioContext, config: BackingConfig = {}) {
+    super();
     this.audioContext = audioContext;
     this.tempo = config.tempo ?? DEFAULT_TEMPO;
     this.style = config.style ?? DEFAULT_STYLE;
@@ -103,6 +116,7 @@ export class BackingTrack {
     this.bars = config.bars ?? DEFAULT_BARS;
     this.swing = Math.max(0, Math.min(100, config.swing ?? DEFAULT_SWING));
     this.key = DEFAULT_KEY;
+    this.onChordChangeCallback = config.onChordChange;
 
     this.resolvedChords = this.resolveChords(config.chords ?? ['I']);
 
@@ -135,6 +149,9 @@ export class BackingTrack {
     this.nextNoteTime = this.audioContext.currentTime;
     this.currentBeat = 0;
     this.currentChordIndex = 0;
+    this.totalBeat = 0;
+
+    this.emitChordChange();
 
     this.schedulerInterval = setInterval(() => {
       this.schedule();
@@ -200,6 +217,46 @@ export class BackingTrack {
    */
   getChords(): ResolvedChord[] {
     return [...this.resolvedChords];
+  }
+
+  /**
+   * Returns the index of the currently playing chord.
+   */
+  getCurrentChordIndex(): number {
+    return this.currentChordIndex;
+  }
+
+  /**
+   * Returns the currently playing chord, or null if no chords are set.
+   */
+  getCurrentChord(): ResolvedChord | null {
+    return this.resolvedChords[this.currentChordIndex] ?? null;
+  }
+
+  /**
+   * Jumps to a specific chord in the progression.
+   *
+   * @param index - The chord index to jump to (0-based)
+   */
+  seekToChord(index: number): void {
+    if (index < 0 || index >= this.resolvedChords.length) return;
+    this.currentChordIndex = index;
+    this.currentBeat = 0;
+    this.emitChordChange();
+  }
+
+  /**
+   * Jumps to a specific beat position in the progression.
+   *
+   * @param beat - The beat number to jump to (0-based)
+   */
+  seekToBeat(beat: number): void {
+    if (beat < 0) return;
+    const totalBeats = this.resolvedChords.length * this.beatsPerChord;
+    beat = beat % totalBeats;
+    this.currentChordIndex = Math.floor(beat / this.beatsPerChord);
+    this.currentBeat = beat % this.beatsPerChord;
+    this.emitChordChange();
   }
 
   /**
@@ -422,11 +479,13 @@ export class BackingTrack {
     const beatDuration = 60 / this.tempo;
     this.nextNoteTime += beatDuration;
     this.currentBeat++;
+    this.totalBeat++;
 
     if (this.currentBeat >= this.beatsPerChord) {
       this.currentBeat = 0;
       this.currentChordIndex =
         (this.currentChordIndex + 1) % this.resolvedChords.length;
+      this.emitChordChange();
     }
   }
 
@@ -440,5 +499,20 @@ export class BackingTrack {
       return resolveChordProgression(['I'], this.key);
     }
     return resolveChordProgression(progression, this.key);
+  }
+
+  private emitChordChange(): void {
+    const chord = this.resolvedChords[this.currentChordIndex];
+    if (!chord) return;
+
+    const detail: ChordChangeEventDetail = {
+      chord,
+      chordIndex: this.currentChordIndex,
+      beatInBar: this.currentBeat,
+      totalBeat: this.totalBeat,
+    };
+
+    this.dispatchEvent(new CustomEvent('chordchange', { detail }));
+    this.onChordChangeCallback?.(detail);
   }
 }
