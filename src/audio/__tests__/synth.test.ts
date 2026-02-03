@@ -79,7 +79,10 @@ describe('Synth', () => {
 
   beforeEach(() => {
     mockAudioContext = createMockAudioContext();
-    vi.stubGlobal('AudioContext', vi.fn(() => mockAudioContext));
+    vi.stubGlobal(
+      'AudioContext',
+      vi.fn(() => mockAudioContext)
+    );
   });
 
   afterEach(() => {
@@ -189,14 +192,20 @@ describe('Synth', () => {
       const synth = new Synth();
       synth.noteOn(0, 10);
       const osc = mockAudioContext.createOscillator();
-      expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(20, expect.any(Number));
+      expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(
+        20,
+        expect.any(Number)
+      );
     });
 
     it('clamps frequency to maximum 20000Hz', () => {
       const synth = new Synth();
       synth.noteOn(0, 25000);
       const osc = mockAudioContext.createOscillator();
-      expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(20000, expect.any(Number));
+      expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(
+        20000,
+        expect.any(Number)
+      );
     });
 
     it('does nothing if synth is destroyed', () => {

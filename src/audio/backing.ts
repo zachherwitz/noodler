@@ -87,7 +87,7 @@ export class BackingTrack {
   private currentBeat = 0;
   private currentChordIndex = 0;
   private beatsPerChord = 0;
-  private activeOscillators: Set<OscillatorNode> = new Set();
+  private activeOscillators = new Set<OscillatorNode>();
 
   /**
    * Creates a new BackingTrack instance.
@@ -110,7 +110,10 @@ export class BackingTrack {
     this.masterGain.gain.setValueAtTime(0.4, this.audioContext.currentTime);
 
     this.compressor = this.audioContext.createDynamicsCompressor();
-    this.compressor.threshold.setValueAtTime(-20, this.audioContext.currentTime);
+    this.compressor.threshold.setValueAtTime(
+      -20,
+      this.audioContext.currentTime
+    );
     this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
     this.compressor.ratio.setValueAtTime(8, this.audioContext.currentTime);
     this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
@@ -281,7 +284,11 @@ export class BackingTrack {
     while (this.nextNoteTime < lookaheadEnd) {
       const notes = this.getNotesForCurrentBeat();
       for (const note of notes) {
-        this.playNote(note.frequency, this.nextNoteTime + note.time, note.duration);
+        this.playNote(
+          note.frequency,
+          this.nextNoteTime + note.time,
+          note.duration
+        );
       }
 
       this.advanceBeat();
@@ -351,11 +358,14 @@ export class BackingTrack {
       case 'arpeggio': {
         const chordTones = this.getChordTones(chord, baseOctave);
         const noteIndex = this.currentBeat % chordTones.length;
-        notes.push({
-          time: 0,
-          frequency: chordTones[noteIndex]!,
-          duration: beatDuration * 0.8,
-        });
+        const freq = chordTones[noteIndex];
+        if (freq !== undefined) {
+          notes.push({
+            time: 0,
+            frequency: freq,
+            duration: beatDuration * 0.8,
+          });
+        }
         break;
       }
     }
@@ -371,7 +381,11 @@ export class BackingTrack {
     return [root, third, fifth];
   }
 
-  private playNote(frequency: number, startTime: number, duration: number): void {
+  private playNote(
+    frequency: number,
+    startTime: number,
+    duration: number
+  ): void {
     const instrumentConfig = INSTRUMENT_CONFIG[this.instrument];
     const { waveform, envelope } = instrumentConfig;
 
@@ -399,7 +413,7 @@ export class BackingTrack {
     oscillator.stop(releaseEnd + 0.01);
 
     this.activeOscillators.add(oscillator);
-    oscillator.onended = () => {
+    oscillator.onended = (): void => {
       this.activeOscillators.delete(oscillator);
     };
   }
@@ -411,7 +425,8 @@ export class BackingTrack {
 
     if (this.currentBeat >= this.beatsPerChord) {
       this.currentBeat = 0;
-      this.currentChordIndex = (this.currentChordIndex + 1) % this.resolvedChords.length;
+      this.currentChordIndex =
+        (this.currentChordIndex + 1) % this.resolvedChords.length;
     }
   }
 

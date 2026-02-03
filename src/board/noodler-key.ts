@@ -38,7 +38,11 @@ export class NoodlerKey extends HTMLElement {
     this.setAttribute('role', 'button');
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+  attributeChangedCallback(
+    name: string,
+    oldValue: string | null,
+    newValue: string | null
+  ): void {
     if (oldValue === newValue) return;
 
     switch (name) {

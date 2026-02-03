@@ -94,11 +94,12 @@ function steppedBend(xOffset: number): number {
     Math.min(MAX_OCTAVE_OFFSET * CENTS_PER_OCTAVE, targetCents)
   );
 
-  let closest = STEPPED_INTERVALS[0]!;
+  let closest = STEPPED_INTERVALS[0] ?? 0;
   let minDiff = Math.abs(clampedCents - closest);
 
   for (let i = 1; i < STEPPED_INTERVALS.length; i++) {
-    const interval = STEPPED_INTERVALS[i]!;
+    const interval = STEPPED_INTERVALS[i];
+    if (interval === undefined) continue;
     const diff = Math.abs(clampedCents - interval);
     if (diff < minDiff) {
       minDiff = diff;

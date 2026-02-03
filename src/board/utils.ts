@@ -1,25 +1,46 @@
 import type { NoteName, ScaleType } from '../scale/types.js';
 import type { BoardTheme, EffectName, ParsedScaleConfig } from './types.js';
 
-const VALID_NOTES: Set<string> = new Set([
-  'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
+const VALID_NOTES = new Set<string>([
+  'C',
+  'C#',
+  'D',
+  'D#',
+  'E',
+  'F',
+  'F#',
+  'G',
+  'G#',
+  'A',
+  'A#',
+  'B',
 ]);
 
-const VALID_SCALE_TYPES: Set<string> = new Set([
-  'pentatonic-major', 'pentatonic-minor', 'blues',
-  'major', 'minor', 'dorian', 'mixolydian',
+const VALID_SCALE_TYPES = new Set<string>([
+  'pentatonic-major',
+  'pentatonic-minor',
+  'blues',
+  'major',
+  'minor',
+  'dorian',
+  'mixolydian',
 ]);
 
-const VALID_WAVEFORMS: Set<string> = new Set([
-  'sine', 'square', 'sawtooth', 'triangle',
+const VALID_WAVEFORMS = new Set<string>([
+  'sine',
+  'square',
+  'sawtooth',
+  'triangle',
 ]);
 
-const VALID_THEMES: Set<string> = new Set([
-  'dark', 'light', 'colorful',
-]);
+const VALID_THEMES = new Set<string>(['dark', 'light', 'colorful']);
 
-const VALID_EFFECTS: Set<string> = new Set([
-  'delay', 'distortion', 'vibrato', 'filter', 'reverb',
+const VALID_EFFECTS = new Set<string>([
+  'delay',
+  'distortion',
+  'vibrato',
+  'filter',
+  'reverb',
 ]);
 
 const SHORTHAND_SCALE_MAP: Record<string, ScaleType> = {
@@ -38,7 +59,9 @@ const SHORTHAND_SCALE_MAP: Record<string, ScaleType> = {
  * @param scaleStr - The scale attribute string
  * @returns Parsed config or null if invalid
  */
-export function parseScaleAttribute(scaleStr: string): ParsedScaleConfig | null {
+export function parseScaleAttribute(
+  scaleStr: string
+): ParsedScaleConfig | null {
   if (!scaleStr || typeof scaleStr !== 'string') {
     return null;
   }
@@ -58,7 +81,11 @@ export function parseScaleAttribute(scaleStr: string): ParsedScaleConfig | null 
     // Handle flats by converting to sharps
     if (twoChar[1] === 'B' && twoChar[0] !== 'A' && twoChar[0] !== 'B') {
       const flatToSharp: Record<string, NoteName> = {
-        DB: 'C#', EB: 'D#', GB: 'F#', AB: 'G#', BB: 'A#',
+        DB: 'C#',
+        EB: 'D#',
+        GB: 'F#',
+        AB: 'G#',
+        BB: 'A#',
       };
       if (flatToSharp[twoChar]) {
         root = flatToSharp[twoChar];
@@ -72,10 +99,13 @@ export function parseScaleAttribute(scaleStr: string): ParsedScaleConfig | null 
 
   // If no two-char note found, try single character
   if (!root && trimmed.length >= 1) {
-    const oneChar = trimmed[0]!.toUpperCase();
-    if (VALID_NOTES.has(oneChar)) {
-      root = oneChar as NoteName;
-      remaining = trimmed.slice(1).trim();
+    const firstChar = trimmed[0];
+    if (firstChar) {
+      const oneChar = firstChar.toUpperCase();
+      if (VALID_NOTES.has(oneChar)) {
+        root = oneChar as NoteName;
+        remaining = trimmed.slice(1).trim();
+      }
     }
   }
 
@@ -161,7 +191,10 @@ export function parseEffectsAttribute(effectsStr: string | null): EffectName[] {
  * @param defaultCount - Default count if invalid
  * @returns Valid note count (1-24 range)
  */
-export function validateNotesCount(notesStr: string | null, defaultCount: number): number {
+export function validateNotesCount(
+  notesStr: string | null,
+  defaultCount: number
+): number {
   if (!notesStr) {
     return defaultCount;
   }
@@ -182,7 +215,11 @@ export function validateNotesCount(notesStr: string | null, defaultCount: number
  * @param noteCount - Number of notes
  * @returns Note index (0 to noteCount-1)
  */
-export function getNoteIndexFromY(y: number, height: number, noteCount: number): number {
+export function getNoteIndexFromY(
+  y: number,
+  height: number,
+  noteCount: number
+): number {
   if (height <= 0 || noteCount <= 0) {
     return 0;
   }
@@ -200,7 +237,7 @@ export function getNoteIndexFromY(y: number, height: number, noteCount: number):
  * @param maxCents - Maximum bend in cents (default: 200 = 2 semitones)
  * @returns Cents value (-maxCents to +maxCents)
  */
-export function getBendFromX(x: number, width: number, maxCents: number = 200): number {
+export function getBendFromX(x: number, width: number, maxCents = 200): number {
   if (width <= 0) {
     return 0;
   }
@@ -216,7 +253,7 @@ export function getBendFromX(x: number, width: number, maxCents: number = 200): 
  *
  * @param duration - Vibration duration in ms
  */
-export function triggerHaptic(duration: number = 10): void {
+export function triggerHaptic(duration = 10): void {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
     navigator.vibrate(duration);
   }

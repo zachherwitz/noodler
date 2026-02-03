@@ -20,7 +20,8 @@ import {
   validateWaveform,
 } from './utils.js';
 import { xOffsetToCents } from './bend.js';
-import { NoodlerKey, registerNoodlerKey } from './noodler-key.js';
+import type { NoodlerKey } from './noodler-key.js';
+import { registerNoodlerKey } from './noodler-key.js';
 
 const boardStyles = createBoardStyles();
 
@@ -59,7 +60,7 @@ export class NoodlerBoard extends HTMLElement {
   private keyElements: NoodlerKey[] = [];
   private synth: Synth | null = null;
   private notes: Note[] = [];
-  private activePointers: Map<number, PointerState> = new Map();
+  private activePointers = new Map<number, PointerState>();
   private bendMode: BendMode = 'dynamic';
 
   static get observedAttributes(): string[] {
@@ -103,7 +104,11 @@ export class NoodlerBoard extends HTMLElement {
     this.destroySynth();
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+  attributeChangedCallback(
+    name: string,
+    oldValue: string | null,
+    newValue: string | null
+  ): void {
     if (oldValue === newValue) return;
 
     switch (name) {
@@ -145,7 +150,11 @@ export class NoodlerBoard extends HTMLElement {
 
     if (!parsedScale) {
       console.warn(`Invalid scale attribute: "${scaleAttr}". Using default.`);
-      this.notes = generateScale({ root: 'A', type: 'pentatonic-minor', octave: 4 }).notes;
+      this.notes = generateScale({
+        root: 'A',
+        type: 'pentatonic-minor',
+        octave: 4,
+      }).notes;
     } else {
       const scale = generateScale({
         root: parsedScale.root,
@@ -155,7 +164,10 @@ export class NoodlerBoard extends HTMLElement {
       this.notes = scale.notes;
     }
 
-    const notesCount = validateNotesCount(this.getAttribute('notes'), this.notes.length);
+    const notesCount = validateNotesCount(
+      this.getAttribute('notes'),
+      this.notes.length
+    );
     this.notes = this.notes.slice(0, notesCount);
 
     this.keysContainer.textContent = '';
@@ -164,7 +176,8 @@ export class NoodlerBoard extends HTMLElement {
     const theme = validateTheme(this.getAttribute('theme'));
 
     for (let i = 0; i < this.notes.length; i++) {
-      const note = this.notes[i]!;
+      const note = this.notes[i];
+      if (!note) continue;
       const key = document.createElement('noodler-key') as NoodlerKey;
       key.setAttribute('label', note.name);
 
@@ -201,7 +214,8 @@ export class NoodlerBoard extends HTMLElement {
     const theme = validateTheme(this.getAttribute('theme'));
 
     for (let i = 0; i < this.keyElements.length; i++) {
-      const key = this.keyElements[i]!;
+      const key = this.keyElements[i];
+      if (!key) continue;
       if (theme === 'colorful') {
         key.setAttribute('color', getNoteColor(i, this.keyElements.length));
       } else {

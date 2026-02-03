@@ -45,7 +45,8 @@ function makeDistortionCurve(amount: number): Float32Array {
 
   for (let i = 0; i < samples; i++) {
     const x = (i * 2) / samples - 1;
-    curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+    curve[i] =
+      ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
   }
 
   return curve;
@@ -66,7 +67,8 @@ function generateImpulseResponse(
   for (let channel = 0; channel < 2; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < length; i++) {
-      channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+      channelData[i] =
+        (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
     }
   }
 
@@ -112,7 +114,7 @@ export function createDelay(
   return {
     input: inputGain,
     output: outputGain,
-    cleanup: () => {
+    cleanup: (): void => {
       inputGain.disconnect();
       outputGain.disconnect();
       dryGain.disconnect();
@@ -140,7 +142,9 @@ export function createDistortion(
   const outputGain = ctx.createGain();
   const waveshaper = ctx.createWaveShaper();
 
-  waveshaper.curve = makeDistortionCurve(opts.amount) as Float32Array<ArrayBuffer>;
+  waveshaper.curve = makeDistortionCurve(
+    opts.amount
+  ) as Float32Array<ArrayBuffer>;
   waveshaper.oversample = '4x';
 
   inputGain.connect(waveshaper);
@@ -149,7 +153,7 @@ export function createDistortion(
   return {
     input: inputGain,
     output: outputGain,
-    cleanup: () => {
+    cleanup: (): void => {
       inputGain.disconnect();
       waveshaper.disconnect();
       outputGain.disconnect();
@@ -190,7 +194,7 @@ export function createVibrato(
     output: outputGain,
     lfo,
     lfoGain,
-    cleanup: () => {
+    cleanup: (): void => {
       lfo.stop();
       lfo.disconnect();
       lfoGain.disconnect();
@@ -237,7 +241,7 @@ export function createFilter(
   return {
     input: inputGain,
     output: outputGain,
-    cleanup: () => {
+    cleanup: (): void => {
       lfo.stop();
       lfo.disconnect();
       lfoGain.disconnect();
@@ -283,7 +287,7 @@ export function createReverb(
   return {
     input: inputGain,
     output: outputGain,
-    cleanup: () => {
+    cleanup: (): void => {
       inputGain.disconnect();
       dryGain.disconnect();
       wetGain.disconnect();

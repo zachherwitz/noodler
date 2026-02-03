@@ -22,5 +22,13 @@ export default tseslint.config(
       ],
       'no-console': 'warn',
     },
+  },
+  {
+    files: ['src/**/__tests__/**/*.ts', 'src/**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-extraneous-class': 'off',
+    },
   }
 );

@@ -23,7 +23,7 @@ const A4_MIDI = 69;
  * noteToFrequency('A', 4); // 440
  * noteToFrequency('C', 4); // 261.626...
  */
-export function noteToFrequency(note: NoteName, octave: number = 4): number {
+export function noteToFrequency(note: NoteName, octave = 4): number {
   const semitone = NOTE_SEMITONES[note];
   const midi = semitone + (octave + 1) * 12;
   return A4_FREQUENCY * Math.pow(2, (midi - A4_MIDI) / 12);

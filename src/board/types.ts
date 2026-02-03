@@ -60,7 +60,12 @@ export interface PointerState {
 /**
  * Valid effect names that can be toggled.
  */
-export type EffectName = 'delay' | 'distortion' | 'vibrato' | 'filter' | 'reverb';
+export type EffectName =
+  | 'delay'
+  | 'distortion'
+  | 'vibrato'
+  | 'filter'
+  | 'reverb';
 
 /**
  * Bend mode for horizontal pitch bending behavior.

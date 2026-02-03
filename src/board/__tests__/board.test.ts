@@ -213,21 +213,23 @@ describe('validateTheme', () => {
 
 describe('parseEffectsAttribute', () => {
   it('parses comma-separated effects', () => {
-    expect(parseEffectsAttribute('delay,vibrato')).toEqual(['delay', 'vibrato']);
+    expect(parseEffectsAttribute('delay,vibrato')).toEqual([
+      'delay',
+      'vibrato',
+    ]);
   });
 
   it('filters out invalid effects', () => {
-    expect(parseEffectsAttribute('delay,invalid,vibrato')).toEqual(['delay', 'vibrato']);
+    expect(parseEffectsAttribute('delay,invalid,vibrato')).toEqual([
+      'delay',
+      'vibrato',
+    ]);
   });
 
   it('handles all valid effects', () => {
-    expect(parseEffectsAttribute('delay,distortion,vibrato,filter,reverb')).toEqual([
-      'delay',
-      'distortion',
-      'vibrato',
-      'filter',
-      'reverb',
-    ]);
+    expect(
+      parseEffectsAttribute('delay,distortion,vibrato,filter,reverb')
+    ).toEqual(['delay', 'distortion', 'vibrato', 'filter', 'reverb']);
   });
 
   it('returns empty array for null', () => {
@@ -239,11 +241,17 @@ describe('parseEffectsAttribute', () => {
   });
 
   it('trims whitespace', () => {
-    expect(parseEffectsAttribute(' delay , vibrato ')).toEqual(['delay', 'vibrato']);
+    expect(parseEffectsAttribute(' delay , vibrato ')).toEqual([
+      'delay',
+      'vibrato',
+    ]);
   });
 
   it('handles case insensitivity', () => {
-    expect(parseEffectsAttribute('DELAY,Vibrato')).toEqual(['delay', 'vibrato']);
+    expect(parseEffectsAttribute('DELAY,Vibrato')).toEqual([
+      'delay',
+      'vibrato',
+    ]);
   });
 });
 
@@ -387,7 +395,10 @@ describe('styles', () => {
       const mockSheet = {
         replaceSync: vi.fn(),
       };
-      vi.stubGlobal('CSSStyleSheet', vi.fn(() => mockSheet));
+      vi.stubGlobal(
+        'CSSStyleSheet',
+        vi.fn(() => mockSheet)
+      );
 
       const { createBoardStyles } = await import('../styles.js');
       const sheet = createBoardStyles();
@@ -405,7 +416,10 @@ describe('styles', () => {
       const mockSheet = {
         replaceSync: vi.fn(),
       };
-      vi.stubGlobal('CSSStyleSheet', vi.fn(() => mockSheet));
+      vi.stubGlobal(
+        'CSSStyleSheet',
+        vi.fn(() => mockSheet)
+      );
 
       const { createKeyStyles } = await import('../styles.js');
       const sheet = createKeyStyles();
@@ -443,9 +457,12 @@ describe('component registration', () => {
       define: vi.fn(),
     };
     vi.stubGlobal('customElements', mockCustomElements);
-    vi.stubGlobal('CSSStyleSheet', vi.fn(() => ({
-      replaceSync: vi.fn(),
-    })));
+    vi.stubGlobal(
+      'CSSStyleSheet',
+      vi.fn(() => ({
+        replaceSync: vi.fn(),
+      }))
+    );
     vi.stubGlobal('HTMLElement', class {});
   });
 
@@ -461,7 +478,10 @@ describe('component registration', () => {
     registerNoodlerKey();
 
     expect(mockCustomElements.get).toHaveBeenCalledWith('noodler-key');
-    expect(mockCustomElements.define).toHaveBeenCalledWith('noodler-key', expect.any(Function));
+    expect(mockCustomElements.define).toHaveBeenCalledWith(
+      'noodler-key',
+      expect.any(Function)
+    );
   });
 
   it('registerNoodlerKey skips if already defined', async () => {

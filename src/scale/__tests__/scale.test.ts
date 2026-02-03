@@ -376,7 +376,7 @@ describe('chords', () => {
     });
 
     it('resolves all roman numerals in key of C', () => {
-      const expected: Array<[RomanNumeral, string]> = [
+      const expected: [RomanNumeral, string][] = [
         ['I', 'C'],
         ['II', 'D'],
         ['III', 'E'],

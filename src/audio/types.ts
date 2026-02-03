@@ -44,7 +44,12 @@ export interface ActiveNote {
 /**
  * Available effect types.
  */
-export type EffectType = 'delay' | 'distortion' | 'vibrato' | 'filter' | 'reverb';
+export type EffectType =
+  | 'delay'
+  | 'distortion'
+  | 'vibrato'
+  | 'filter'
+  | 'reverb';
 
 /**
  * Configuration for the delay effect.
@@ -138,7 +143,12 @@ export interface EffectsState {
 /**
  * Rhythm pattern styles for backing tracks.
  */
-export type BackingStyle = 'drone' | 'quarter' | 'eighth' | 'blues' | 'arpeggio';
+export type BackingStyle =
+  | 'drone'
+  | 'quarter'
+  | 'eighth'
+  | 'blues'
+  | 'arpeggio';
 
 /**
  * Instrument sounds for backing tracks.

@@ -44,7 +44,7 @@ export class Synth {
   private masterGain: GainNode | null = null;
   private compressor: DynamicsCompressorNode | null = null;
   private effectsInputGain: GainNode | null = null;
-  private activeNotes: Map<number, ActiveNote> = new Map();
+  private activeNotes = new Map<number, ActiveNote>();
   private waveform: OscillatorType;
   private envelope: ADSREnvelope;
   private volume: number;
@@ -103,7 +103,10 @@ export class Synth {
 
     // Apply octave shift
     const shiftedFreq = frequency * Math.pow(2, this.octaveShift);
-    const clampedFreq = Math.max(MIN_FREQUENCY, Math.min(MAX_FREQUENCY, shiftedFreq));
+    const clampedFreq = Math.max(
+      MIN_FREQUENCY,
+      Math.min(MAX_FREQUENCY, shiftedFreq)
+    );
     const now = this.audioContext.currentTime;
 
     // Create oscillator
@@ -225,7 +228,10 @@ export class Synth {
    * @param octaves - Number of octaves to shift (-2 to +2)
    */
   setOctaveShift(octaves: number): void {
-    this.octaveShift = Math.max(MIN_OCTAVE_SHIFT, Math.min(MAX_OCTAVE_SHIFT, octaves));
+    this.octaveShift = Math.max(
+      MIN_OCTAVE_SHIFT,
+      Math.min(MAX_OCTAVE_SHIFT, octaves)
+    );
   }
 
   /**
@@ -282,7 +288,9 @@ export class Synth {
             this.effectNodes.vibrato.lfoGain.connect(note.oscillator.detune);
           } else {
             try {
-              this.effectNodes.vibrato.lfoGain.disconnect(note.oscillator.detune);
+              this.effectNodes.vibrato.lfoGain.disconnect(
+                note.oscillator.detune
+              );
             } catch {
               // Already disconnected
             }
@@ -384,7 +392,10 @@ export class Synth {
 
     // Create compressor for mobile optimization (prevents clipping)
     this.compressor = this.audioContext.createDynamicsCompressor();
-    this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
+    this.compressor.threshold.setValueAtTime(
+      -24,
+      this.audioContext.currentTime
+    );
     this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
     this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
     this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
@@ -392,7 +403,10 @@ export class Synth {
 
     // Create master gain
     this.masterGain = this.audioContext.createGain();
-    this.masterGain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+    this.masterGain.gain.setValueAtTime(
+      this.volume,
+      this.audioContext.currentTime
+    );
 
     // Create effects input gain
     this.effectsInputGain = this.audioContext.createGain();
@@ -406,7 +420,8 @@ export class Synth {
   }
 
   private rebuildEffectChain(): void {
-    if (!this.audioContext || !this.effectsInputGain || !this.masterGain) return;
+    if (!this.audioContext || !this.effectsInputGain || !this.masterGain)
+      return;
 
     // Disconnect effects input from everything
     this.effectsInputGain.disconnect();
@@ -449,18 +464,22 @@ export class Synth {
       this.effectsInputGain.connect(this.masterGain);
     } else {
       // Connect through effect chain
-      const firstEffect = activeEffects[0]!;
-      const lastEffect = activeEffects[activeEffects.length - 1]!;
+      const firstEffect = activeEffects[0];
+      const lastEffect = activeEffects[activeEffects.length - 1];
 
-      this.effectsInputGain.connect(firstEffect.input);
+      if (firstEffect && lastEffect) {
+        this.effectsInputGain.connect(firstEffect.input);
 
-      for (let i = 0; i < activeEffects.length - 1; i++) {
-        const current = activeEffects[i]!;
-        const next = activeEffects[i + 1]!;
-        current.output.connect(next.input);
+        for (let i = 0; i < activeEffects.length - 1; i++) {
+          const current = activeEffects[i];
+          const next = activeEffects[i + 1];
+          if (current && next) {
+            current.output.connect(next.input);
+          }
+        }
+
+        lastEffect.output.connect(this.masterGain);
       }
-
-      lastEffect.output.connect(this.masterGain);
     }
   }
 

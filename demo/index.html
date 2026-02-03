@@ -1,172 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Noodler - A modular, framework-agnostic music toolkit for web applications">
-  <title>Noodler Demo</title>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <main>
-    <header class="hero">
-      <h1>Noodler</h1>
-      <p class="tagline">A modular, framework-agnostic music toolkit for web applications</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Noodler - A modular, framework-agnostic music toolkit for web applications"
+    />
+    <title>Noodler Demo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <header class="hero">
+        <h1>Noodler</h1>
+        <p class="tagline">
+          A modular, framework-agnostic music toolkit for web applications
+        </p>
+      </header>
 
-    <section class="demo-section" id="board-demo">
-      <h2>Interactive Board</h2>
-      <p class="description">Touch or click the board below to play notes. Slide horizontally for pitch bend.</p>
+      <section class="demo-section" id="board-demo">
+        <h2>Interactive Board</h2>
+        <p class="description">
+          Touch or click the board below to play notes. Slide horizontally for
+          pitch bend.
+        </p>
 
-      <div class="controls">
-        <div class="control-group">
-          <label for="scale-select">Scale</label>
-          <select id="scale-select">
-            <option value="A pentatonic-minor">A Pentatonic Minor</option>
-            <option value="C major">C Major</option>
-            <option value="E minor">E Minor</option>
-            <option value="G pentatonic-major">G Pentatonic Major</option>
-            <option value="D blues">D Blues</option>
-            <option value="A dorian">A Dorian</option>
-            <option value="E mixolydian">E Mixolydian</option>
-          </select>
+        <div class="controls">
+          <div class="control-group">
+            <label for="scale-select">Scale</label>
+            <select id="scale-select">
+              <option value="A pentatonic-minor">A Pentatonic Minor</option>
+              <option value="C major">C Major</option>
+              <option value="E minor">E Minor</option>
+              <option value="G pentatonic-major">G Pentatonic Major</option>
+              <option value="D blues">D Blues</option>
+              <option value="A dorian">A Dorian</option>
+              <option value="E mixolydian">E Mixolydian</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="waveform-select">Waveform</label>
+            <select id="waveform-select">
+              <option value="sine">Sine</option>
+              <option value="triangle">Triangle</option>
+              <option value="square">Square</option>
+              <option value="sawtooth">Sawtooth</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="colorful">Colorful</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="bend-mode-select">Bend Mode</label>
+            <select id="bend-mode-select">
+              <option value="dynamic">Dynamic (smooth)</option>
+              <option value="stepped">Stepped (scale intervals)</option>
+              <option value="direct">Direct (octave toggle)</option>
+            </select>
+          </div>
         </div>
 
-        <div class="control-group">
-          <label for="waveform-select">Waveform</label>
-          <select id="waveform-select">
-            <option value="sine">Sine</option>
-            <option value="triangle">Triangle</option>
-            <option value="square">Square</option>
-            <option value="sawtooth">Sawtooth</option>
-          </select>
+        <div class="effects-controls">
+          <label class="effect-toggle">
+            <input type="checkbox" id="effect-delay" />
+            <span>Delay</span>
+          </label>
+          <label class="effect-toggle">
+            <input type="checkbox" id="effect-vibrato" />
+            <span>Vibrato</span>
+          </label>
+          <label class="effect-toggle">
+            <input type="checkbox" id="effect-distortion" />
+            <span>Distortion</span>
+          </label>
+          <label class="effect-toggle">
+            <input type="checkbox" id="effect-reverb" />
+            <span>Reverb</span>
+          </label>
+          <label class="effect-toggle">
+            <input type="checkbox" id="effect-filter" />
+            <span>Filter</span>
+          </label>
         </div>
 
-        <div class="control-group">
-          <label for="theme-select">Theme</label>
-          <select id="theme-select">
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="colorful">Colorful</option>
-          </select>
+        <div class="board-container">
+          <noodler-board
+            id="main-board"
+            scale="A pentatonic-minor"
+            waveform="sine"
+            theme="dark"
+            bend-mode="dynamic"
+          ></noodler-board>
         </div>
 
-        <div class="control-group">
-          <label for="bend-mode-select">Bend Mode</label>
-          <select id="bend-mode-select">
-            <option value="dynamic">Dynamic (smooth)</option>
-            <option value="stepped">Stepped (scale intervals)</option>
-            <option value="direct">Direct (octave toggle)</option>
-          </select>
+        <div class="bend-debug" id="bend-debug">
+          <span class="label">Bend:</span>
+          <span id="bend-value">0</span>
+          <span class="unit">cents</span>
         </div>
-      </div>
 
-      <div class="effects-controls">
-        <label class="effect-toggle">
-          <input type="checkbox" id="effect-delay">
-          <span>Delay</span>
-        </label>
-        <label class="effect-toggle">
-          <input type="checkbox" id="effect-vibrato">
-          <span>Vibrato</span>
-        </label>
-        <label class="effect-toggle">
-          <input type="checkbox" id="effect-distortion">
-          <span>Distortion</span>
-        </label>
-        <label class="effect-toggle">
-          <input type="checkbox" id="effect-reverb">
-          <span>Reverb</span>
-        </label>
-        <label class="effect-toggle">
-          <input type="checkbox" id="effect-filter">
-          <span>Filter</span>
-        </label>
-      </div>
-
-      <div class="board-container">
-        <noodler-board
-          id="main-board"
-          scale="A pentatonic-minor"
-          waveform="sine"
-          theme="dark"
-          bend-mode="dynamic"
-        ></noodler-board>
-      </div>
-
-      <div class="bend-debug" id="bend-debug">
-        <span class="label">Bend:</span>
-        <span id="bend-value">0</span>
-        <span class="unit">cents</span>
-      </div>
-
-      <details class="code-example">
-        <summary>View Code</summary>
-        <pre><code>&lt;noodler-board
+        <details class="code-example">
+          <summary>View Code</summary>
+          <pre><code>&lt;noodler-board
   scale="A pentatonic-minor"
   waveform="sine"
   effects="delay,vibrato"
   theme="dark"
   bend-mode="dynamic"
 &gt;&lt;/noodler-board&gt;</code></pre>
-      </details>
-    </section>
+        </details>
+      </section>
 
-    <section class="demo-section" id="scale-demo">
-      <h2>Scale API</h2>
-      <p class="description">Generate scales and see note frequencies.</p>
+      <section class="demo-section" id="scale-demo">
+        <h2>Scale API</h2>
+        <p class="description">Generate scales and see note frequencies.</p>
 
-      <div class="controls">
-        <div class="control-group">
-          <label for="scale-root">Root Note</label>
-          <select id="scale-root">
-            <option value="C">C</option>
-            <option value="C#">C#</option>
-            <option value="D">D</option>
-            <option value="D#">D#</option>
-            <option value="E">E</option>
-            <option value="F">F</option>
-            <option value="F#">F#</option>
-            <option value="G">G</option>
-            <option value="G#">G#</option>
-            <option value="A" selected>A</option>
-            <option value="A#">A#</option>
-            <option value="B">B</option>
-          </select>
+        <div class="controls">
+          <div class="control-group">
+            <label for="scale-root">Root Note</label>
+            <select id="scale-root">
+              <option value="C">C</option>
+              <option value="C#">C#</option>
+              <option value="D">D</option>
+              <option value="D#">D#</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="F#">F#</option>
+              <option value="G">G</option>
+              <option value="G#">G#</option>
+              <option value="A" selected>A</option>
+              <option value="A#">A#</option>
+              <option value="B">B</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="scale-type">Scale Type</label>
+            <select id="scale-type">
+              <option value="pentatonic-minor">Pentatonic Minor</option>
+              <option value="pentatonic-major">Pentatonic Major</option>
+              <option value="blues">Blues</option>
+              <option value="major">Major</option>
+              <option value="minor">Minor</option>
+              <option value="dorian">Dorian</option>
+              <option value="mixolydian">Mixolydian</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="scale-octave">Octave</label>
+            <select id="scale-octave">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
         </div>
 
-        <div class="control-group">
-          <label for="scale-type">Scale Type</label>
-          <select id="scale-type">
-            <option value="pentatonic-minor">Pentatonic Minor</option>
-            <option value="pentatonic-major">Pentatonic Major</option>
-            <option value="blues">Blues</option>
-            <option value="major">Major</option>
-            <option value="minor">Minor</option>
-            <option value="dorian">Dorian</option>
-            <option value="mixolydian">Mixolydian</option>
-          </select>
+        <div id="scale-output" class="output-panel">
+          <div class="notes-grid"></div>
         </div>
 
-        <div class="control-group">
-          <label for="scale-octave">Octave</label>
-          <select id="scale-octave">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="scale-output" class="output-panel">
-        <div class="notes-grid"></div>
-      </div>
-
-      <details class="code-example">
-        <summary>View Code</summary>
-        <pre><code>import { generateScale } from 'noodler/scale';
+        <details class="code-example">
+          <summary>View Code</summary>
+          <pre><code>import { generateScale } from 'noodler/scale';
 
 const scale = generateScale({
   root: 'A',
@@ -177,50 +185,52 @@ const scale = generateScale({
 scale.notes.forEach(note => {
   console.log(`${note.name}: ${note.frequency.toFixed(2)} Hz`);
 });</code></pre>
-      </details>
-    </section>
+        </details>
+      </section>
 
-    <section class="demo-section" id="synth-demo">
-      <h2>Synth API</h2>
-      <p class="description">Play notes with different waveforms and effects.</p>
+      <section class="demo-section" id="synth-demo">
+        <h2>Synth API</h2>
+        <p class="description">
+          Play notes with different waveforms and effects.
+        </p>
 
-      <div class="piano-keys" id="synth-keys">
-        <button class="piano-key" data-note="0">C</button>
-        <button class="piano-key" data-note="1">D</button>
-        <button class="piano-key" data-note="2">E</button>
-        <button class="piano-key" data-note="3">F</button>
-        <button class="piano-key" data-note="4">G</button>
-        <button class="piano-key" data-note="5">A</button>
-        <button class="piano-key" data-note="6">B</button>
-        <button class="piano-key" data-note="7">C</button>
-      </div>
-
-      <div class="controls">
-        <div class="control-group">
-          <label for="synth-waveform">Waveform</label>
-          <select id="synth-waveform">
-            <option value="sine">Sine</option>
-            <option value="triangle">Triangle</option>
-            <option value="square">Square</option>
-            <option value="sawtooth">Sawtooth</option>
-          </select>
+        <div class="piano-keys" id="synth-keys">
+          <button class="piano-key" data-note="0">C</button>
+          <button class="piano-key" data-note="1">D</button>
+          <button class="piano-key" data-note="2">E</button>
+          <button class="piano-key" data-note="3">F</button>
+          <button class="piano-key" data-note="4">G</button>
+          <button class="piano-key" data-note="5">A</button>
+          <button class="piano-key" data-note="6">B</button>
+          <button class="piano-key" data-note="7">C</button>
         </div>
 
-        <div class="control-group">
-          <label for="synth-octave">Octave Shift</label>
-          <select id="synth-octave">
-            <option value="-2">-2</option>
-            <option value="-1">-1</option>
-            <option value="0" selected>0</option>
-            <option value="1">+1</option>
-            <option value="2">+2</option>
-          </select>
-        </div>
-      </div>
+        <div class="controls">
+          <div class="control-group">
+            <label for="synth-waveform">Waveform</label>
+            <select id="synth-waveform">
+              <option value="sine">Sine</option>
+              <option value="triangle">Triangle</option>
+              <option value="square">Square</option>
+              <option value="sawtooth">Sawtooth</option>
+            </select>
+          </div>
 
-      <details class="code-example">
-        <summary>View Code</summary>
-        <pre><code>import { Synth } from 'noodler/audio';
+          <div class="control-group">
+            <label for="synth-octave">Octave Shift</label>
+            <select id="synth-octave">
+              <option value="-2">-2</option>
+              <option value="-1">-1</option>
+              <option value="0" selected>0</option>
+              <option value="1">+1</option>
+              <option value="2">+2</option>
+            </select>
+          </div>
+        </div>
+
+        <details class="code-example">
+          <summary>View Code</summary>
+          <pre><code>import { Synth } from 'noodler/audio';
 
 const synth = new Synth({ waveform: 'sawtooth' });
 
@@ -228,60 +238,68 @@ synth.toggleDelay(true);
 synth.noteOn(0, 440); // Play A4
 synth.noteOff(0);     // Release note
 synth.destroy();      // Cleanup</code></pre>
-      </details>
-    </section>
+        </details>
+      </section>
 
-    <section class="demo-section" id="backing-demo">
-      <h2>Backing Track</h2>
-      <p class="description">Create rhythm patterns with chord progressions.</p>
+      <section class="demo-section" id="backing-demo">
+        <h2>Backing Track</h2>
+        <p class="description">
+          Create rhythm patterns with chord progressions.
+        </p>
 
-      <div class="controls">
-        <div class="control-group">
-          <label for="backing-tempo">Tempo (BPM)</label>
-          <input type="range" id="backing-tempo" min="60" max="180" value="120">
-          <span id="tempo-value">120</span>
+        <div class="controls">
+          <div class="control-group">
+            <label for="backing-tempo">Tempo (BPM)</label>
+            <input
+              type="range"
+              id="backing-tempo"
+              min="60"
+              max="180"
+              value="120"
+            />
+            <span id="tempo-value">120</span>
+          </div>
+
+          <div class="control-group">
+            <label for="backing-style">Style</label>
+            <select id="backing-style">
+              <option value="quarter">Quarter Notes</option>
+              <option value="eighth">Eighth Notes</option>
+              <option value="blues">Blues Shuffle</option>
+              <option value="arpeggio">Arpeggio</option>
+              <option value="drone">Drone</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="backing-instrument">Instrument</label>
+            <select id="backing-instrument">
+              <option value="bass">Bass</option>
+              <option value="pad">Pad</option>
+              <option value="pluck">Pluck</option>
+              <option value="keys">Keys</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="backing-chords">Chords</label>
+            <select id="backing-chords">
+              <option value="I,IV,V,I">I - IV - V - I</option>
+              <option value="i,iv,VII,III">i - iv - VII - III</option>
+              <option value="I,V,vi,IV">I - V - vi - IV</option>
+              <option value="ii,V,I,I">ii - V - I - I</option>
+            </select>
+          </div>
         </div>
 
-        <div class="control-group">
-          <label for="backing-style">Style</label>
-          <select id="backing-style">
-            <option value="quarter">Quarter Notes</option>
-            <option value="eighth">Eighth Notes</option>
-            <option value="blues">Blues Shuffle</option>
-            <option value="arpeggio">Arpeggio</option>
-            <option value="drone">Drone</option>
-          </select>
+        <div class="transport-controls">
+          <button id="backing-play" class="transport-btn">Play</button>
+          <button id="backing-stop" class="transport-btn" disabled>Stop</button>
         </div>
 
-        <div class="control-group">
-          <label for="backing-instrument">Instrument</label>
-          <select id="backing-instrument">
-            <option value="bass">Bass</option>
-            <option value="pad">Pad</option>
-            <option value="pluck">Pluck</option>
-            <option value="keys">Keys</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label for="backing-chords">Chords</label>
-          <select id="backing-chords">
-            <option value="I,IV,V,I">I - IV - V - I</option>
-            <option value="i,iv,VII,III">i - iv - VII - III</option>
-            <option value="I,V,vi,IV">I - V - vi - IV</option>
-            <option value="ii,V,I,I">ii - V - I - I</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="transport-controls">
-        <button id="backing-play" class="transport-btn">Play</button>
-        <button id="backing-stop" class="transport-btn" disabled>Stop</button>
-      </div>
-
-      <details class="code-example">
-        <summary>View Code</summary>
-        <pre><code>import { BackingTrack } from 'noodler/audio';
+        <details class="code-example">
+          <summary>View Code</summary>
+          <pre><code>import { BackingTrack } from 'noodler/audio';
 
 const ctx = new AudioContext();
 const backing = new BackingTrack(ctx, {
@@ -294,17 +312,17 @@ const backing = new BackingTrack(ctx, {
 backing.play();
 backing.stop();
 backing.destroy();</code></pre>
-      </details>
-    </section>
+        </details>
+      </section>
 
-    <footer>
-      <p>
-        <a href="https://github.com/zachherwitz/noodler">GitHub</a> |
-        <a href="https://www.npmjs.com/package/noodler">npm</a>
-      </p>
-    </footer>
-  </main>
+      <footer>
+        <p>
+          <a href="https://github.com/zachherwitz/noodler">GitHub</a> |
+          <a href="https://www.npmjs.com/package/noodler">npm</a>
+        </p>
+      </footer>
+    </main>
 
-  <script type="module" src="./main.ts"></script>
-</body>
+    <script type="module" src="./main.ts"></script>
+  </body>
 </html>

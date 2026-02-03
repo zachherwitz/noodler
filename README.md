@@ -97,9 +97,9 @@ Generates a scale based on the provided configuration.
 
 ```typescript
 interface ScaleConfig {
-  root: NoteName;      // 'C' | 'C#' | 'D' | ... | 'B'
-  type: ScaleType;     // 'pentatonic-major' | 'pentatonic-minor' | 'blues' | 'major' | 'minor' | 'dorian' | 'mixolydian'
-  octave?: number;     // Starting octave (default: 4)
+  root: NoteName; // 'C' | 'C#' | 'D' | ... | 'B'
+  type: ScaleType; // 'pentatonic-major' | 'pentatonic-minor' | 'blues' | 'major' | 'minor' | 'dorian' | 'mixolydian'
+  octave?: number; // Starting octave (default: 4)
 }
 
 const scale = generateScale({ root: 'G', type: 'major' });
@@ -111,9 +111,9 @@ const scale = generateScale({ root: 'G', type: 'major' });
 Converts a note name and octave to frequency in Hz using 12-TET tuning (A4 = 440Hz).
 
 ```typescript
-noteToFrequency('A', 4);  // 440
-noteToFrequency('C', 4);  // 261.626
-noteToFrequency('E', 5);  // 659.255
+noteToFrequency('A', 4); // 440
+noteToFrequency('C', 4); // 261.626
+noteToFrequency('E', 5); // 659.255
 ```
 
 #### `resolveChord(chord, key, octave)`
@@ -145,14 +145,14 @@ Web Audio synthesizer with oscillators, ADSR envelopes, and effects.
 
 ```typescript
 const synth = new Synth({
-  waveform: 'sine',     // 'sine' | 'square' | 'sawtooth' | 'triangle'
+  waveform: 'sine', // 'sine' | 'square' | 'sawtooth' | 'triangle'
   envelope: {
     attack: 0.01,
     decay: 0.1,
     sustain: 0.7,
-    release: 0.3
+    release: 0.3,
   },
-  volume: 0.5           // 0-1
+  volume: 0.5, // 0-1
 });
 
 // Playing notes
@@ -161,12 +161,12 @@ synth.noteOff(noteIndex);
 synth.stopAll();
 
 // Pitch bend
-synth.bend(noteIndex, cents);  // 100 cents = 1 semitone
+synth.bend(noteIndex, cents); // 100 cents = 1 semitone
 
 // Configuration
 synth.setWaveform('sawtooth');
 synth.setVolume(0.8);
-synth.setOctaveShift(1);  // -2 to +2 octaves
+synth.setOctaveShift(1); // -2 to +2 octaves
 
 // Effects
 synth.toggleDelay(true);
@@ -189,11 +189,11 @@ import { BackingTrack } from 'noodler/audio';
 const ctx = new AudioContext();
 const backing = new BackingTrack(ctx, {
   tempo: 100,
-  style: 'quarter',    // 'drone' | 'quarter' | 'eighth' | 'blues' | 'arpeggio'
-  instrument: 'bass',  // 'bass' | 'pad' | 'pluck' | 'keys'
+  style: 'quarter', // 'drone' | 'quarter' | 'eighth' | 'blues' | 'arpeggio'
+  instrument: 'bass', // 'bass' | 'pad' | 'pluck' | 'keys'
   chords: ['I', 'IV', 'V', 'I'],
   bars: 1,
-  swing: 0             // 0-100
+  swing: 0, // 0-100
 });
 
 backing.play();
@@ -214,7 +214,7 @@ import {
   createDistortion,
   createVibrato,
   createFilter,
-  createReverb
+  createReverb,
 } from 'noodler/audio';
 
 const ctx = new AudioContext();
@@ -231,44 +231,44 @@ Interactive touch-friendly music board.
 
 **Attributes:**
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `scale` | string | `'A pentatonic-minor'` | Scale configuration (e.g., `'Em'`, `'A pentatonic-minor'`, `'G major'`) |
-| `notes` | number | Scale length | Number of notes to display |
-| `waveform` | string | `'sine'` | Oscillator type: `'sine'`, `'square'`, `'sawtooth'`, `'triangle'` |
-| `effects` | string | `''` | Comma-separated effects: `'delay,vibrato,distortion,filter,reverb'` |
-| `theme` | string | `'dark'` | Visual theme: `'dark'`, `'light'`, `'colorful'` |
-| `bend-mode` | string | `'dynamic'` | Pitch bend behavior (see Bend Modes below) |
+| Attribute   | Type   | Default                | Description                                                             |
+| ----------- | ------ | ---------------------- | ----------------------------------------------------------------------- |
+| `scale`     | string | `'A pentatonic-minor'` | Scale configuration (e.g., `'Em'`, `'A pentatonic-minor'`, `'G major'`) |
+| `notes`     | number | Scale length           | Number of notes to display                                              |
+| `waveform`  | string | `'sine'`               | Oscillator type: `'sine'`, `'square'`, `'sawtooth'`, `'triangle'`       |
+| `effects`   | string | `''`                   | Comma-separated effects: `'delay,vibrato,distortion,filter,reverb'`     |
+| `theme`     | string | `'dark'`               | Visual theme: `'dark'`, `'light'`, `'colorful'`                         |
+| `bend-mode` | string | `'dynamic'`            | Pitch bend behavior (see Bend Modes below)                              |
 
 **Events:**
 
-| Event | Detail | Description |
-|-------|--------|-------------|
-| `noteon` | `{ note, frequency }` | Fired when a note starts playing |
-| `noteoff` | `{ note }` | Fired when a note stops playing |
-| `bend` | `{ note, cents }` | Fired when pitch bend changes |
-| `bendmodechange` | `{ mode }` | Fired when bend mode changes |
+| Event            | Detail                | Description                      |
+| ---------------- | --------------------- | -------------------------------- |
+| `noteon`         | `{ note, frequency }` | Fired when a note starts playing |
+| `noteoff`        | `{ note }`            | Fired when a note stops playing  |
+| `bend`           | `{ note, cents }`     | Fired when pitch bend changes    |
+| `bendmodechange` | `{ mode }`            | Fired when bend mode changes     |
 
 **Methods:**
 
 ```typescript
 const board = document.querySelector('noodler-board');
 
-board.getNotes();      // Get current scale notes
-board.getSynth();      // Get internal Synth instance
-board.stopAll();       // Stop all playing notes
-board.getBendMode();   // Get current bend mode
+board.getNotes(); // Get current scale notes
+board.getSynth(); // Get internal Synth instance
+board.stopAll(); // Stop all playing notes
+board.getBendMode(); // Get current bend mode
 ```
 
 #### Bend Modes
 
 The `bend-mode` attribute controls how horizontal finger movement affects pitch:
 
-| Mode | Behavior |
-|------|----------|
-| `dynamic` | Smooth continuous bend up to 1 octave in either direction |
+| Mode      | Behavior                                                                       |
+| --------- | ------------------------------------------------------------------------------ |
+| `dynamic` | Smooth continuous bend up to 1 octave in either direction                      |
 | `stepped` | Snaps to pentatonic scale intervals (-700, -400, -200, 0, 200, 400, 700 cents) |
-| `direct` | 3-state toggle: octave down (left), original (center), octave up (right) |
+| `direct`  | 3-state toggle: octave down (left), original (center), octave up (right)       |
 
 ```html
 <!-- Smooth continuous bending -->
@@ -288,10 +288,10 @@ Converts pixel offset to pitch bend in cents. Useful for custom bend implementat
 ```typescript
 import { xOffsetToCents } from 'noodler/board';
 
-xOffsetToCents(75, 'dynamic');   // 600 cents (half octave)
+xOffsetToCents(75, 'dynamic'); // 600 cents (half octave)
 xOffsetToCents(-150, 'dynamic'); // -1200 cents (octave down)
-xOffsetToCents(-60, 'direct');   // -1200 cents (octave down threshold)
-xOffsetToCents(30, 'stepped');   // 200 cents (nearest interval)
+xOffsetToCents(-60, 'direct'); // -1200 cents (octave down threshold)
+xOffsetToCents(30, 'stepped'); // 200 cents (nearest interval)
 ```
 
 #### SSR/Manual Registration

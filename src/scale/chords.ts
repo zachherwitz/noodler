@@ -51,14 +51,14 @@ function parseChordSymbol(
 export function resolveChord(
   chord: RomanNumeral | string,
   key: NoteName,
-  octave: number = 4
+  octave = 4
 ): ResolvedChord {
   const upperChord = chord.toUpperCase();
   const degree = ROMAN_TO_DEGREE[upperChord];
 
   if (degree !== undefined) {
     const keyIndex = NOTE_SEMITONES[key];
-    const semitoneOffset = MAJOR_SCALE_DEGREES[degree - 1]!;
+    const semitoneOffset = MAJOR_SCALE_DEGREES[degree - 1] ?? 0;
     const rootIndex = (keyIndex + semitoneOffset) % 12;
     const root = NOTE_NAMES[rootIndex] as NoteName;
     const isMajor = isMajorChord(chord);
@@ -93,7 +93,7 @@ export function resolveChord(
 export function resolveChordProgression(
   progression: (RomanNumeral | string)[],
   key: NoteName,
-  octave: number = 4
+  octave = 4
 ): ResolvedChord[] {
   return progression.map((chord) => resolveChord(chord, key, octave));
 }

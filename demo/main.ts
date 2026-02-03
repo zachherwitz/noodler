@@ -1,7 +1,11 @@
 import { generateScale } from '../src/scale';
 import type { NoteName, ScaleType, Note } from '../src/scale';
 import { Synth, BackingTrack } from '../src/audio';
-import type { OscillatorType, BackingStyle, BackingInstrument } from '../src/audio';
+import type {
+  OscillatorType,
+  BackingStyle,
+  BackingInstrument,
+} from '../src/audio';
 import '../src/board';
 import type { NoodlerBoard } from '../src/board';
 
@@ -165,7 +169,14 @@ function initBackingDemo(): void {
   const playBtn = $('backing-play') as HTMLButtonElement | null;
   const stopBtn = $('backing-stop') as HTMLButtonElement | null;
 
-  if (!tempoSlider || !styleSelect || !instrumentSelect || !chordsSelect || !playBtn || !stopBtn) {
+  if (
+    !tempoSlider ||
+    !styleSelect ||
+    !instrumentSelect ||
+    !chordsSelect ||
+    !playBtn ||
+    !stopBtn
+  ) {
     return;
   }
 
