@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { BackingTrack } from '../backing.js';
-import type { BackingStyle, BackingInstrument } from '../types.js';
+import type {
+  BackingStyle,
+  BackingInstrument,
+  ChordChangeEventDetail,
+} from '../types.js';
 
 const mockOscillator = {
   type: 'sine' as OscillatorType,
@@ -511,6 +515,220 @@ describe('BackingTrack', () => {
       backing.play();
       backing.stop();
       expect(clearIntervalSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('chord change events', () => {
+    it('fires chordchange event when play() is called', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+        }
+      );
+      const handler = vi.fn();
+      backing.addEventListener('chordchange', handler);
+      backing.play();
+
+      expect(handler).toHaveBeenCalledTimes(1);
+      const event = handler.mock
+        .calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
+      expect(event.detail.chordIndex).toBe(0);
+      expect(event.detail.chord.symbol).toBe('C');
+      expect(event.detail.beatInBar).toBe(0);
+      expect(event.detail.totalBeat).toBe(0);
+    });
+
+    it('calls onChordChange callback when play() is called', () => {
+      const callback = vi.fn();
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+          onChordChange: callback,
+        }
+      );
+      backing.play();
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback.mock.calls[0]![0]).toMatchObject({
+        chordIndex: 0,
+        beatInBar: 0,
+      });
+    });
+
+    it('fires event when chord changes during playback', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+          tempo: 120,
+          bars: 1,
+        }
+      );
+      const handler = vi.fn();
+      backing.addEventListener('chordchange', handler);
+      backing.play();
+
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      // Seek to second chord to verify event fires
+      backing.seekToChord(1);
+      expect(handler).toHaveBeenCalledTimes(2);
+    });
+
+    it('fires both event and callback together', () => {
+      const eventHandler = vi.fn();
+      const callback = vi.fn();
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+          onChordChange: callback,
+        }
+      );
+      backing.addEventListener('chordchange', eventHandler);
+      backing.play();
+
+      expect(eventHandler).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getCurrentChord', () => {
+    it('returns current chord', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+        }
+      );
+
+      expect(backing.getCurrentChordIndex()).toBe(0);
+      expect(backing.getCurrentChord()?.symbol).toBe('C');
+    });
+
+    it('returns null when chords array is empty', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: [],
+        }
+      );
+      expect(backing.getCurrentChord()).not.toBeNull();
+    });
+  });
+
+  describe('seekToChord', () => {
+    it('jumps to specified chord', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+        }
+      );
+
+      backing.seekToChord(2);
+      expect(backing.getCurrentChordIndex()).toBe(2);
+      expect(backing.getCurrentChord()?.symbol).toBe('G');
+    });
+
+    it('ignores invalid index (negative)', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+        }
+      );
+
+      backing.seekToChord(-1);
+      expect(backing.getCurrentChordIndex()).toBe(0);
+    });
+
+    it('ignores invalid index (too large)', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+        }
+      );
+
+      backing.seekToChord(99);
+      expect(backing.getCurrentChordIndex()).toBe(0);
+    });
+
+    it('fires chordchange event when seeking', () => {
+      const handler = vi.fn();
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+        }
+      );
+      backing.addEventListener('chordchange', handler);
+
+      backing.seekToChord(1);
+
+      expect(handler).toHaveBeenCalledTimes(1);
+      const event = handler.mock
+        .calls[0]![0] as CustomEvent<ChordChangeEventDetail>;
+      expect(event.detail.chordIndex).toBe(1);
+    });
+  });
+
+  describe('seekToBeat', () => {
+    it('jumps to specified beat', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+          bars: 1,
+        }
+      );
+
+      backing.seekToBeat(4);
+      expect(backing.getCurrentChordIndex()).toBe(1);
+    });
+
+    it('wraps beat to progression length', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+          bars: 1,
+        }
+      );
+
+      backing.seekToBeat(8);
+      expect(backing.getCurrentChordIndex()).toBe(0);
+    });
+
+    it('ignores negative beat', () => {
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV'],
+        }
+      );
+
+      backing.seekToBeat(-5);
+      expect(backing.getCurrentChordIndex()).toBe(0);
+    });
+
+    it('fires chordchange event when seeking', () => {
+      const handler = vi.fn();
+      const backing = new BackingTrack(
+        mockAudioContext as unknown as AudioContext,
+        {
+          chords: ['I', 'IV', 'V'],
+          bars: 1,
+        }
+      );
+      backing.addEventListener('chordchange', handler);
+
+      backing.seekToBeat(4);
+
+      expect(handler).toHaveBeenCalledTimes(1);
     });
   });
 });

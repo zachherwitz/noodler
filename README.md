@@ -137,6 +137,31 @@ resolveChordProgression(['I', 'IV', 'V', 'I'], 'G');
 // [{ root: 'G', ... }, { root: 'C', ... }, { root: 'D', ... }, { root: 'G', ... }]
 ```
 
+#### `PROGRESSIONS`
+
+Predefined chord progressions for common musical styles.
+
+```typescript
+import { PROGRESSIONS } from 'noodler/scale';
+
+// Use built-in progressions
+const chords = PROGRESSIONS.BLUES_12_BAR;
+// ['I', 'I', 'I', 'I', 'IV', 'IV', 'I', 'I', 'V', 'IV', 'I', 'V']
+```
+
+Available progressions:
+
+| Name            | Pattern                    | Description         |
+| --------------- | -------------------------- | ------------------- |
+| `BLUES_12_BAR`  | I-I-I-I-IV-IV-I-I-V-IV-I-V | 12-bar blues        |
+| `POP_FOUR`      | I-V-vi-IV                  | Pop/rock four-chord |
+| `JAZZ_251`      | ii-V-I                     | Jazz turnaround     |
+| `FIFTIES`       | I-vi-IV-V                  | 1950s doo-wop       |
+| `CANON`         | I-V-vi-iii-IV-I-IV-V       | Pachelbel's Canon   |
+| `ROCK_BASIC`    | I-IV-V-IV                  | Basic rock          |
+| `MINOR_NATURAL` | i-iv-v                     | Minor key natural   |
+| `ANDALUSIAN`    | i-VII-VI-V                 | Flamenco cadence    |
+
 ### Audio Module (`noodler/audio`)
 
 #### `Synth`
@@ -181,7 +206,7 @@ synth.destroy();
 
 #### `BackingTrack`
 
-Manages backing track playback with chord progressions and rhythm patterns.
+Manages backing track playback with chord progressions and rhythm patterns. Extends `EventTarget` for chord change notifications.
 
 ```typescript
 import { BackingTrack } from 'noodler/audio';
@@ -194,14 +219,49 @@ const backing = new BackingTrack(ctx, {
   chords: ['I', 'IV', 'V', 'I'],
   bars: 1,
   swing: 0, // 0-100
+  onChordChange: (detail) => {
+    console.log(`Now playing: ${detail.chord.symbol}`);
+  },
 });
 
+// Playback control
 backing.play();
 backing.stop();
 backing.setTempo(120);
 backing.setChords(['ii', 'V', 'I'], 'C');
 backing.setStyle('blues');
 backing.destroy();
+```
+
+**Chord Change Events:**
+
+BackingTrack dispatches a `chordchange` event whenever the current chord changes:
+
+```typescript
+backing.addEventListener('chordchange', (e) => {
+  console.log(e.detail.chord.symbol); // 'C', 'F', 'G', etc.
+  console.log(e.detail.chordIndex); // 0, 1, 2, ...
+  console.log(e.detail.beatInBar); // Current beat within the bar
+  console.log(e.detail.totalBeat); // Total beats since play started
+});
+
+// Or use the callback in config
+const backing = new BackingTrack(ctx, {
+  chords: ['I', 'IV', 'V'],
+  onChordChange: (detail) => updateUI(detail.chord),
+});
+```
+
+**Query and Seek Methods:**
+
+```typescript
+// Query current state
+backing.getCurrentChord(); // ResolvedChord | null
+backing.getCurrentChordIndex(); // number
+
+// Jump to position
+backing.seekToChord(2); // Jump to chord at index 2
+backing.seekToBeat(8); // Jump to beat 8
 ```
 
 #### Effect Factories
@@ -319,6 +379,7 @@ import type {
   GeneratedScale,
   RomanNumeral,
   ResolvedChord,
+  ProgressionName,
 } from 'noodler/scale';
 
 import type {
@@ -330,6 +391,8 @@ import type {
   BackingStyle,
   BackingInstrument,
   BackingConfig,
+  ChordChangeEventDetail,
+  ChordChangeCallback,
 } from 'noodler/audio';
 
 import type {

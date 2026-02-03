@@ -24,4 +24,6 @@ export type {
   BackingStyle,
   BackingInstrument,
   BackingConfig,
+  ChordChangeEventDetail,
+  ChordChangeCallback,
 } from './types';

@@ -1,3 +1,5 @@
+import type { ResolvedChord } from '../scale/types';
+
 /**
  * Oscillator waveform types available in Web Audio.
  */
@@ -156,6 +158,25 @@ export type BackingStyle =
 export type BackingInstrument = 'bass' | 'pad' | 'pluck' | 'keys';
 
 /**
+ * Detail payload for chord change events.
+ */
+export interface ChordChangeEventDetail {
+  /** The current chord */
+  chord: ResolvedChord;
+  /** Index of the chord in the progression (0-based) */
+  chordIndex: number;
+  /** Current beat within the bar (0-based) */
+  beatInBar: number;
+  /** Total beat count since playback started */
+  totalBeat: number;
+}
+
+/**
+ * Callback for chord change events.
+ */
+export type ChordChangeCallback = (detail: ChordChangeEventDetail) => void;
+
+/**
  * Configuration for BackingTrack.
  */
 export interface BackingConfig {
@@ -171,4 +192,6 @@ export interface BackingConfig {
   bars?: number;
   /** Swing percentage 0-100 (default: 0) */
   swing?: number;
+  /** Callback fired when the current chord changes */
+  onChordChange?: ChordChangeCallback;
 }
