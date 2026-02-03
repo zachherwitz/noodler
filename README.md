@@ -5,6 +5,8 @@
 
 A modular, framework-agnostic music toolkit for web applications. Provides scale generation, Web Audio synthesis, and touch-friendly visual boards via Web Components.
 
+**[Live Demo](https://noodler-demo.vercel.app)**
+
 ## Features
 
 - **Scale API** - Generate scales, calculate frequencies, resolve chord progressions
