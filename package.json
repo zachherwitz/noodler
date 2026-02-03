@@ -48,12 +48,32 @@
     "music",
     "audio",
     "synth",
+    "synthesizer",
     "scale",
     "web-audio",
-    "web-components"
+    "web-components",
+    "webaudio",
+    "oscillator",
+    "chord",
+    "pentatonic",
+    "touch",
+    "mobile",
+    "midi",
+    "frequency"
   ],
-  "author": "",
+  "author": "Zach Herwitz",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zachherwitz/noodler.git"
+  },
+  "homepage": "https://github.com/zachherwitz/noodler#readme",
+  "bugs": {
+    "url": "https://github.com/zachherwitz/noodler/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@types/node": "^25.2.0",
     "eslint": "^9.39.2",
